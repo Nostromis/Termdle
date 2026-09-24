@@ -2,7 +2,7 @@
 
 A terminal word-guessing game.
 
-![Termdle](https://github.com/Nostromis/Termdle/blob/main/assests/termdle-logo.png)
+![Termdle](https://github.com/Nostromis/Termdle/blob/main/assets/termdle-logo.png)
 
 ## What is it?
 
@@ -31,7 +31,7 @@ The current version is distributed as a Windows `.exe`, so you don't need Python
 Download the latest release from the [Releases](../../releases) page and run it.
 
 # Demo
-![DEMO](https://github.com/Nostromis/Termdle/blob/main/assests/demo.gif)
+![DEMO](https://github.com/Nostromis/Termdle/blob/main/assets/demo.gif)
 
 ## Source
 
