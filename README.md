@@ -2,7 +2,7 @@
 
 A terminal word-guessing game.
 
-![Termdle](assets/termdle-logo.png)
+![Termdle](https://github.com/Nostromis/Termdle/blob/main/assests/termdle-logo.png)
 
 ## What is it?
 
