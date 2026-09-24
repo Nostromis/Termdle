@@ -131,22 +131,24 @@ class TermdleApp(App):
     ]
     def action_restart(self) -> None:
         self.target = random.choice(Target)
-        self.guesses_left = 6
+        self.guessesLeft = 6
         for row in self.rows:
             row.remove_children()
             for _ in range(5):
                 row.mount(Tile("", "gray"))
         self.query_one("#message", Static).update("Guess the 5-letter word!")
-        guess_input = self.query_one("#guess-input", Input)
-        guess_input.disabled = False
-        guess_input.value = ""
+        guessInput = self.query_one("#guess-input", Input)
+        guessInput.disabled = False
+        guessInput.value = ""
+        guessInput.focus()
 
     CSS_PATH = str(getResourcePath("termdle.css"))
 
     def compose(self) -> ComposeResult:
         self.target = random.choice(Target)
-        self.guesses_left = 6
+        self.guessesLeft = 6
         self.rows = []
+        yield Static(f"Wins: {stats['wins']} | Streak: {stats['streak']} | Score: {stats['score']}", id="stats")
         yield Static(banner, id="intro")
         yield Static("Guess the 5-letter word!", id="message")
         for _ in range(6):
@@ -155,7 +157,6 @@ class TermdleApp(App):
             yield row
         yield Input(placeholder="Type your guess...", id="guess-input", max_length=5)
         yield Static("Made by Nostromis\n ctrl + r restart | ctrl + c quit", id="credits")
-        yield Static(f"Wins: {stats['wins']} | Streak: {stats['streak']} | Score: {stats['score']}", id="stats")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         guess = event.value.upper()
@@ -170,7 +171,7 @@ class TermdleApp(App):
             return
     
         result = validate(guess, self.target)
-        current_row = self.rows[6 - self.guesses_left]
+        current_row = self.rows[6 - self.guessesLeft]
         current_row.remove_children()
         for entry in result:
             status, letter = entry.split()
@@ -179,12 +180,21 @@ class TermdleApp(App):
         if all(entry.startswith("Green") for entry in result):
             message.update(f"You win! The word was {self.target}.")
             event.input.disabled = True
+            guesses_used = 6 - self.guessesLeft + 1
+            stats["wins"] += 1
+            stats["streak"] += 1
+            stats["score"] += calculateScore(guesses_used)
+            saveStats(stats)
+            self.query_one("#stats", Static).update(f"Wins: {stats['wins']} | Streak: {stats['streak']} | Score: {stats['score']}")
             return
 
-        self.guesses_left -= 1
-        if self.guesses_left <= 0:
+        self.guessesLeft -= 1
+        if self.guessesLeft <= 0:
             message.update(f"Out of guesses. The word was {self.target}.")
             event.input.disabled = True
+            stats["streak"] = 0
+            saveStats(stats)
+            self.query_one("#stats", Static).update(f"Wins: {stats['wins']} | Streak: {stats['streak']} | Score: {stats['score']}")
             return
 
         event.input.value = ""
