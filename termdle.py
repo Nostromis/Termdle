@@ -3,21 +3,25 @@ from textual.widgets import Input, Static
 from textual.containers import Horizontal
 from collections import Counter
 import random
-import os
+from pathlib import Path
 import sys
 import pyfiglet
 
 banner = pyfiglet.figlet_format("TERMDLE", font="big")
 
-def getResourcePath(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
+
+
+def getResourcePath(relativePath):
+    if hasattr(sys, "_MEIPASS"):
+        basePath = Path(sys._MEIPASS)
+    else:
+        basePath = Path(__file__).resolve().parent
+    return basePath / relativePath
 
 def loadWordfile(filename):
     try:
-        file_path = getResourcePath(filename)
-        with open(file_path, "r", encoding="utf-8-sig") as file:
+        filePath = getResourcePath(filename)
+        with open(filePath, "r", encoding="utf-8-sig") as file:
             return [
                 line.strip().upper()
                 for line in file
@@ -93,8 +97,8 @@ class TermdleApp(App):
         guess_input = self.query_one("#guess-input", Input)
         guess_input.disabled = False
         guess_input.value = ""
-    
-    CSS_PATH = "termdle.css"
+
+    CSS_PATH = str(getResourcePath("termdle.css"))
 
     def compose(self) -> ComposeResult:
         self.target = random.choice(Target)
@@ -141,6 +145,9 @@ class TermdleApp(App):
 
         event.input.value = ""
 
+def main():
+    TermdleApp().run()
+
+
 if __name__ == "__main__":
-    app = TermdleApp()
-    app.run()
+    main()

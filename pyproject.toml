@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "termdle"
+version = "0.9.0"
+description = "A terminal word-guessing game"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "textual",
+    "pyfiglet"
+]
+
+[project.scripts]
+termdle = "termdle:main"
+
+[tool.setuptools]
+py-modules = ["termdle"]
