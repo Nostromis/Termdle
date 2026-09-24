@@ -18,3 +18,6 @@ termdle = "termdle.termdle:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools.package-data]
+termdle = ["termdle.css", "wordslist.txt", "allowedGuesses.txt"]
