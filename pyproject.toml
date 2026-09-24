@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-termdle = "termdle:main"
+termdle = "termdle.termdle:main"
 
-[tool.setuptools]
-py-modules = ["termdle"]
+[tool.setuptools.packages.find]
+where = ["."]
