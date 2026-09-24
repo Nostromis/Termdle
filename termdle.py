@@ -47,9 +47,6 @@ def saveStats(stats):
         json.dump(stats, file, indent=4)
 
 stats = loadStats()
-wins = stats["wins"]
-streak = stats["streak"]
-score = stats["score"]
 
 def getResourcePath(relativePath):
     if hasattr(sys, "_MEIPASS"):
