@@ -3,13 +3,53 @@ from textual.widgets import Input, Static
 from textual.containers import Horizontal
 from collections import Counter
 import random
+import json
+import os
 from pathlib import Path
 import sys
 import pyfiglet
 
 banner = pyfiglet.figlet_format("TERMDLE", font="big")
 
+def getStatsPath():
+    if os.name == "nt":
+        statsDir = Path(os.environ.get("APPDATA", Path.home())) / "termdle"
+    else:
+        statsDir = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "termdle"
 
+    statsDir.mkdir(parents=True, exist_ok=True)
+    return statsDir / "stats.json"
+
+def loadStats():
+    statsPath = getStatsPath()
+
+    if not statsPath.exists():
+        return {
+            "score": 0,
+            "wins": 0,
+            "streak": 0
+        }
+
+    try:
+        with open(statsPath, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (json.JSONDecodeError, OSError):
+        return {
+            "score": 0,
+            "wins": 0,
+            "streak": 0
+        }
+
+def saveStats(stats):
+    statsPath = getStatsPath()
+
+    with open(statsPath, "w", encoding="utf-8") as file:
+        json.dump(stats, file, indent=4)
+
+stats = loadStats()
+wins = stats["wins"]
+streak = stats["streak"]
+score = stats["score"]
 
 def getResourcePath(relativePath):
     if hasattr(sys, "_MEIPASS"):
@@ -63,6 +103,9 @@ def validate(guess: str, target: str):
         pos += 1
     return result
 
+def calculateScore(guessesUsed):
+    return round((7 - guessesUsed) / 6 * 100)
+
 class Tile(Static):
     def __init__(self, letter="", status="gray"):
         super().__init__(letter, classes=f"tile tile-{status}")
@@ -112,6 +155,7 @@ class TermdleApp(App):
             yield row
         yield Input(placeholder="Type your guess...", id="guess-input", max_length=5)
         yield Static("Made by Nostromis\n ctrl + r restart | ctrl + c quit", id="credits")
+        yield Static(f"Wins: {stats['wins']} | Streak: {stats['streak']} | Score: {stats['score']}", id="stats")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         guess = event.value.upper()
@@ -147,7 +191,6 @@ class TermdleApp(App):
 
 def main():
     TermdleApp().run()
-
 
 if __name__ == "__main__":
     main()
